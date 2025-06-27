@@ -1,0 +1,98 @@
+<div class="medical-records-container">
+  <div class="row mb-4">
+    <div class="col-12">
+      <h2>Medical Records</h2>
+      <p class="text-muted">Access and manage your health records</p>
+    </div>
+  </div>
+
+  <div class="row">
+    <!-- Categories -->
+    <div class="col-md-3 mb-4 mb-md-0">
+      <div class="card h-100">
+        <div class="card-header">
+          <h5 class="mb-0">Categories</h5>
+        </div>
+        <div class="card-body p-0">
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item d-flex justify-content-between align-items-center active">
+              All Records
+              <span class="badge bg-primary rounded-pill">12</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              Medical Reports
+              <span class="badge bg-light text-dark rounded-pill">5</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              Prescriptions
+              <span class="badge bg-light text-dark rounded-pill">4</span>
+            </li>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              Lab Results
+              <span class="badge bg-light text-dark rounded-pill">3</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Records List -->
+    <div class="col-md-9">
+      <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <h5 class="mb-0">All Medical Records</h5>
+          <button class="btn btn-primary btn-sm">
+            <fa-icon [icon]="icons.add" class="me-1"></fa-icon>
+            Upload Record
+          </button>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-hover">
+              <thead>
+                <tr>
+                  <th>Type</th>
+                  <th>Date</th>
+                  <th>Doctor</th>
+                  <th>Description</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let record of records">
+                  <td>
+                    <div class="d-flex align-items-center">
+                      <fa-icon 
+                        [icon]="record.type === 'Prescription' ? icons.prescription : 
+                                record.type === 'Lab Results' ? icons.medical : 
+                                icons.report" 
+                        class="me-2"
+                        [ngClass]="{
+                          'text-primary': record.type === 'Medical Report',
+                          'text-success': record.type === 'Prescription',
+                          'text-info': record.type === 'Lab Results'
+                        }"
+                      ></fa-icon>
+                      {{ record.type }}
+                    </div>
+                  </td>
+                  <td>{{ record.date | date }}</td>
+                  <td>{{ record.doctor }}</td>
+                  <td>{{ record.description }}</td>
+                  <td>
+                    <button class="btn btn-sm btn-outline-primary">
+                      <fa-icon [icon]="icons.download"></fa-icon>
+                    </button>
+                    <button class="btn btn-sm btn-outline-secondary ms-1">
+                      View
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,86 @@
+.medical-records-container {
+  padding: 20px;
+  background-color: #f8f9fa;
+  min-height: calc(100vh - 70px);
+}
+
+.card {
+  border: none;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.card-header {
+  background-color: white;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  padding: 1rem 1.5rem;
+  border-radius: 10px 10px 0 0 !important;
+}
+
+.list-group-item {
+  padding: 1rem 1.5rem;
+  border-left: none;
+  border-right: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.list-group-item:first-child {
+  border-top: none;
+}
+
+.list-group-item:last-child {
+  border-bottom: none;
+}
+
+.list-group-item.active {
+  background-color: rgba(26, 127, 92, 0.1);
+  color: #1a7f5c;
+  font-weight: 500;
+  border-color: rgba(0, 0, 0, 0.05);
+}
+
+.list-group-item:hover:not(.active) {
+  background-color: rgba(0, 0, 0, 0.02);
+}
+
+.table {
+  margin-bottom: 0;
+}
+
+.table th {
+  border-top: none;
+  font-weight: 600;
+  color: #495057;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+}
+
+.table td {
+  vertical-align: middle;
+}
+
+.badge {
+  font-weight: 500;
+}
+
+@media (max-width: 768px) {
+  .medical-records-container {
+    padding: 15px;
+  }
+
+  .table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .card-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .card-header h5 {
+    margin-bottom: 0;
+  }
+}

@@ -1,0 +1,325 @@
+<div class="doctors-container">
+  <!-- Header Section -->
+  <div class="doctors-header">
+    <h2 class="mb-0">
+      <fa-icon [icon]="icons.userDoctor" class="me-2"></fa-icon>Doctors Management
+    </h2>
+    <div class="d-flex align-items-center gap-3">
+      <div class="input-group search-box">
+        <span class="input-group-text bg-white">
+          <fa-icon [icon]="icons.search" class="text-muted"></fa-icon>
+        </span>
+        <input
+          type="text"
+          class="form-control border-start-0"
+          placeholder="Search doctors by name, specialty or hospital..."
+          [ngModel]="searchQuery()"
+          (ngModelChange)="updateSearch($event)"
+        />
+      </div>
+      <button class="btn btn-primary">
+        <fa-icon [icon]="icons.plus" class="me-1"></fa-icon> Add New Doctor
+      </button>
+    </div>
+  </div>
+
+  <!-- Filters Section -->
+  <div class="doctors-filters">
+    <div class="filter-group">
+      <label class="form-label">Filter by Gender:</label>
+      <div class="btn-group">
+        <button 
+          class="btn btn-sm btn-outline-secondary"
+          [class.active]="genderFilter() === 'all'"
+          (click)="changeGenderFilter('all')"
+        >
+          All
+        </button>
+        <button 
+          class="btn btn-sm btn-outline-secondary"
+          [class.active]="genderFilter() === 'Male'"
+          (click)="changeGenderFilter('Male')"
+        >
+          Male
+        </button>
+        <button 
+          class="btn btn-sm btn-outline-secondary"
+          [class.active]="genderFilter() === 'Female'"
+          (click)="changeGenderFilter('Female')"
+        >
+          Female
+        </button>
+      </div>
+    </div>
+
+    <div class="filter-group">
+      <label class="form-label">Filter by Specialty:</label>
+      <select 
+        class="form-select form-select-sm"
+        [ngModel]="specialtyFilter()"
+        (ngModelChange)="changeSpecialtyFilter($event)"
+      >
+        <option value="all">All Specialties</option>
+        @for (specialty of specialties(); track specialty) {
+          <option [value]="specialty">{{ specialty }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="filter-group">
+      <label class="form-label">Sort By:</label>
+      <select 
+        class="form-select form-select-sm"
+        [ngModel]="sortBy()"
+        (ngModelChange)="changeSort($event)"
+      >
+        <option value="name-asc">Name (A-Z)</option>
+        <option value="name-desc">Name (Z-A)</option>
+        <option value="experience-asc">Experience (Low to High)</option>
+        <option value="experience-desc">Experience (High to Low)</option>
+        <option value="rating-asc">Rating (Low to High)</option>
+        <option value="rating-desc">Rating (High to Low)</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Doctors List -->
+  <div class="doctors-list">
+    <div class="list-header">
+      <div class="row">
+        <div class="col-md-3">Doctor</div>
+        <div class="col-md-2">Specialty</div>
+        <div class="col-md-2">Hospital</div>
+        <div class="col-md-1">Experience</div>
+        <div class="col-md-1">Rating</div>
+        <div class="col-md-2">Availability</div>
+        <div class="col-md-1">Actions</div>
+      </div>
+    </div>
+
+    @if (filteredDoctors().length === 0) {
+      <div class="no-doctors">
+        <div class="alert alert-info">
+          <fa-icon [icon]="icons.search" class="me-2"></fa-icon>
+          No doctors found matching your criteria.
+        </div>
+      </div>
+    }
+
+    @for (doctor of paginatedDoctors(); track doctor.id) {
+      <div class="doctor-item">
+        <div class="doctor-summary" (click)="toggleDoctorDetails(doctor.id)">
+          <div class="row align-items-center">
+            <div class="col-md-3">
+              <div class="d-flex align-items-center">
+                <div class="doctor-avatar me-3">
+                  <img src="assets/hello.jpeg" alt="{{ doctor.name }}" class="img-fluid rounded-circle">
+                </div>
+                <div>
+                  <strong>{{ doctor.name }}</strong>
+                  <div class="small text-muted">{{ doctor.qualifications }}</div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-2">{{ doctor.specialty }}</div>
+            <div class="col-md-2">{{ doctor.currentHospital }}</div>
+            <div class="col-md-1">{{ doctor.experience }}</div>
+            <div class="col-md-1">
+              <div>
+                @for (star of getStarRating(doctor.rating); track $index) {
+                  <!-- @if (star === 'full') {
+                    <fa-icon [icon]="icons.star" class="text-warning"></fa-icon>
+                  } @else if (star === 'half') {
+                    <fa-icon [icon]="icons.star" class="text-warning half-star"></fa-icon>
+                  } @else {
+                    <fa-icon [icon]="icons.star" class="text-secondary"></fa-icon>
+                  } -->
+                }
+                <span class="ms-1 small rating-badge">{{ doctor.rating.toFixed(1) }}</span>
+              </div>
+            </div>
+            <div class="col-md-2">{{ doctor.availability }}</div>
+            <div class="col-md-1">
+              <fa-icon 
+                [icon]="expandedDoctorId() === doctor.id ? icons.chevronUp : icons.chevronDown" 
+                class="text-primary"
+              ></fa-icon>
+            </div>
+          </div>
+        </div>
+
+        <div class="collapse" [class.show]="expandedDoctorId() === doctor.id">
+          <div class="doctor-details">
+            <div class="row">
+              <div class="col-md-4">
+                <div class="detail-section">
+                  <h5><fa-icon [icon]="icons.hospital" class="me-2 text-primary"></fa-icon>Professional Information</h5>
+                  <div class="detail-item">
+                    <strong>Current Hospital:</strong> {{ doctor.currentHospital }}
+                  </div>
+                  @if (doctor.previousHospitals.length > 0) {
+                    <div class="detail-item">
+                      <strong>Previous Hospitals:</strong> 
+                      <ul class="list-unstyled">
+                        @for (hospital of doctor.previousHospitals; track $index) {
+                          <li>{{ hospital }}</li>
+                        }
+                      </ul>
+                    </div>
+                  }
+                  <div class="detail-item">
+                    <strong>Consultation Fee:</strong> {{ doctor.consultationFee }}
+                  </div>
+                  <div class="detail-item">
+                    <strong>Online Booking:</strong> 
+                    <span [class.text-success]="doctor.onlineBookingAvailable" 
+                          [class.text-danger]="!doctor.onlineBookingAvailable">
+                      {{ doctor.onlineBookingAvailable ? 'Available' : 'Not Available' }}
+                    </span>
+                  </div>
+                </div>
+
+                <div class="detail-section">
+                  <h5><fa-icon [icon]="icons.award" class="me-2 text-primary"></fa-icon>Achievements</h5>
+                  @if (doctor.achievements.length > 0) {
+                    <ul class="list-unstyled">
+                      @for (achievement of doctor.achievements; track $index) {
+                        <li class="mb-1">
+                          <fa-icon [icon]="icons.award" class="text-warning me-2"></fa-icon>
+                          {{ achievement }}
+                        </li>
+                      }
+                    </ul>
+                  } @else {
+                    <p class="text-muted">No achievements listed</p>
+                  }
+                </div>
+              </div>
+
+              <div class="col-md-4">
+                <div class="detail-section">
+                  <h5><fa-icon [icon]="icons.graduation" class="me-2 text-primary"></fa-icon>Qualifications</h5>
+                  <div class="detail-item">
+                    <strong>Education:</strong> {{ doctor.qualifications }}
+                  </div>
+                  @if (doctor.certifications.length > 0) {
+                    <div class="detail-item">
+                      <strong>Certifications:</strong>
+                      <div class="d-flex flex-wrap gap-1 mt-1">
+                        @for (cert of doctor.certifications; track $index) {
+                          <span class="badge bg-info">{{ cert }}</span>
+                        }
+                      </div>
+                    </div>
+                  }
+                  <div class="detail-item">
+                    <strong>Experience:</strong> {{ doctor.experience }} of experience
+                  </div>
+                </div>
+
+                <div class="detail-section">
+                  <h5><fa-icon [icon]="icons.language" class="me-2 text-primary"></fa-icon>Languages</h5>
+                  @if (doctor.languages.length > 0) {
+                    <div class="d-flex flex-wrap gap-1">
+                      @for (language of doctor.languages; track $index) {
+                        <span class="badge bg-secondary">{{ language }}</span>
+                      }
+                    </div>
+                  } @else {
+                    <p class="text-muted">No languages listed</p>
+                  }
+                </div>
+
+                <div class="detail-section">
+                  <h5><fa-icon [icon]="icons.calendar" class="me-2 text-primary"></fa-icon>Availability</h5>
+                  <div class="detail-item">
+                    {{ doctor.availability }}
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-md-4">
+                <div class="detail-section">
+                  <h5><fa-icon [icon]="icons.phone" class="me-2 text-primary"></fa-icon>Contact Information</h5>
+                  <div class="detail-item">
+                    <fa-icon [icon]="icons.phone" class="me-2"></fa-icon>
+                    {{ doctor.contactPhone }}
+                  </div>
+                  <div class="detail-item">
+                    <fa-icon [icon]="icons.email" class="me-2"></fa-icon>
+                    {{ doctor.contactEmail }}
+                  </div>
+                  <div class="detail-item mt-3">
+                    @if (doctor.social.linkedin) {
+                      <a [href]="doctor.social.linkedin" target="_blank" class="me-3">
+                        <fa-icon [icon]="icons.linkedin" size="lg" class="text-primary"></fa-icon>
+                      </a>
+                    }
+                    @if (doctor.social.twitter) {
+                      <a [href]="doctor.social.twitter" target="_blank">
+                        <fa-icon [icon]="icons.twitter" size="lg" class="text-info"></fa-icon>
+                      </a>
+                    }
+                  </div>
+                </div>
+
+                <div class="detail-section">
+                  <h5><fa-icon [icon]="icons.star" class="me-2 text-primary"></fa-icon>Reviews</h5>
+                  @if (doctor.reviews.length > 0) {
+                    <div class="reviews-container">
+                      @for (review of doctor.reviews; track $index) {
+                        <div class="review-item mb-3">
+                          <div class="d-flex justify-content-between">
+                            <strong>{{ review.reviewer }}</strong>
+                            <div class="star-rating">
+                              @for (star of getStarRating(review.stars); track $index) {
+                                @if (star === 'full') {
+                                  <fa-icon [icon]="icons.star" class="text-warning"></fa-icon>
+                                } @else if (star === 'half') {
+                                  <fa-icon [icon]="icons.star" class="text-warning half-star"></fa-icon>
+                                } @else {
+                                  <fa-icon [icon]="icons.star" class="text-secondary"></fa-icon>
+                                }
+                              }
+                            </div>
+                          </div>
+                          <p class="mb-0">{{ review.comment }}</p>
+                        </div>
+                      }
+                    </div>
+                  } @else {
+                    <p class="text-muted">No reviews yet</p>
+                  }
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+
+  <!-- Pagination -->
+  @if (filteredDoctors().length > itemsPerPage) {
+    <div class="doctors-pagination">
+      <nav aria-label="Doctors pagination">
+        <ul class="pagination justify-content-center">
+          <li class="page-item" [class.disabled]="currentPage() === 1">
+            <a class="page-link" (click)="previousPage()">Previous</a>
+          </li>
+          @for (page of getPages(); track page) {
+            <li class="page-item" [class.active]="page === currentPage()">
+              <a class="page-link" (click)="goToPage(page)">{{ page }}</a>
+            </li>
+          }
+          <li class="page-item" [class.disabled]="currentPage() === totalPages()">
+            <a class="page-link" (click)="nextPage()">Next</a>
+          </li>
+        </ul>
+      </nav>
+      <div class="text-center text-muted small mt-2">
+        Showing {{ displayRange().start }} to {{ displayRange().end }} of {{ displayRange().total }} doctors
+      </div>
+    </div>
+  }
+</div>

@@ -1,0 +1,49 @@
+<!-- Main Header -->
+<div class="admin-header text-white shadow sticky-top">
+  <div class="container-fluid d-flex justify-content-between align-items-center h-100 px-0">
+    <img src="assets/logo2.jpg" alt="HealGrid Logo" class="logo-img">
+
+    <nav class="d-flex align-items-center gap-4">
+      <ul class="nav gap-3 m-0">
+        <li class="nav-item"><a class="nav-link text-white fw-semibold" routerLink="/admin-header/patient-records">Patient Records</a></li>
+        <li class="nav-item"><a class="nav-link text-white fw-semibold" routerLink="/admin-header/doctors">Doctors</a></li>
+        <li class="nav-item"><a class="nav-link text-white fw-semibold" routerLink="/admin-header/appointments">Appointments</a></li>
+        <li class="nav-item"><a class="nav-link text-white fw-semibold" routerLink="/admin-header/billing">Billing</a></li>
+        <li class="nav-item"><a class="nav-link text-white fw-semibold" routerLink="/admin-header/patient-records">User Panel</a></li>
+                <li class="nav-item"><a class="nav-link text-white fw-semibold" routerLink="/admin-header/login">Login</a></li>
+                        <li class="nav-item"><a class="nav-link text-white fw-semibold" routerLink="/admin-header/register">Register</a></li>
+      </ul>
+
+      <!-- Profile Dropdown -->
+      <div class="dropdown">
+        <a href="#" class="d-block link-light text-decoration-none dropdown-toggle" id="adminDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+          <img src="https://via.placeholder.com/40x40" alt="Admin" class="rounded-circle" width="40" height="40">
+        </a>
+        <ul class="dropdown-menu dropdown-menu-end mt-2 custom-dropdown" aria-labelledby="adminDropdown">
+          <li><a class="dropdown-item" href="#">Your Profile</a></li>
+          <li><a class="dropdown-item" href="#">Recent Visitings</a></li>
+          <li><a class="dropdown-item" href="#">Settings</a></li>
+          <li><hr class="dropdown-divider"></li>
+          <li><a class="dropdown-item text-danger" href="#">Logout</a></li>
+        </ul>
+      </div>
+    </nav>
+  </div>
+</div>
+
+<!-- Layout: Sidebar and Main Content -->
+<div class="d-flex">
+  <!-- Side Navbar (starts below the header) -->
+  <div class="side-navbar d-flex flex-column align-items-center py-4">
+    <a href="#" class="text-white mb-4" title="Patient Records"><i class="bi bi-people fs-4"></i></a>
+    <a href="#" class="text-white mb-4" title="Doctor Info"><i class="bi bi-person-badge fs-4"></i></a>
+    <a href="#" class="text-white mb-4" title="Appointments"><i class="bi bi-calendar-check fs-4"></i></a>
+    <a href="#" class="text-white mb-4" title="Billing"><i class="bi bi-receipt fs-4"></i></a>
+    <a href="#" class="text-white mb-4" title="User Panel"><i class="bi bi-person-lines-fill fs-4"></i></a>
+  </div>
+
+  <!-- Main content -->
+  <div class="flex-grow-1 p-4">
+    <router-outlet></router-outlet>
+  </div>
+</div>

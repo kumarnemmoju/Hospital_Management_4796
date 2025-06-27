@@ -1,0 +1,144 @@
+<div class="find-doctors-container">
+  <!-- Header Section -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <h2>Find Doctors</h2>
+      <p class="text-muted">Search and book appointments with specialists</p>
+    </div>
+  </div>
+
+  <!-- Search and Filter Section -->
+  <div class="row mb-4">
+    <div class="col-md-8 mb-3 mb-md-0">
+      <div class="search-box">
+        <div class="input-group">
+          <span class="input-group-text bg-white">
+            <fa-icon [icon]="icons.search" class="text-muted"></fa-icon>
+          </span>
+          <input
+            type="text"
+            class="form-control"
+            placeholder="Search by doctor name or specialty..."
+            [(ngModel)]="searchQuery"
+            (input)="filterDoctors()"
+          >
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="filter-box">
+        <div class="input-group">
+          <span class="input-group-text bg-white">
+            <fa-icon [icon]="icons.filter" class="text-muted"></fa-icon>
+          </span>
+          <select
+            class="form-select"
+            [(ngModel)]="selectedSpecialty"
+            (change)="filterDoctors()"
+          >
+            <option *ngFor="let spec of specialties" [value]="spec">{{ spec }}</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Doctors List -->
+  <div class="row">
+    <div class="col-12">
+      <div class="doctors-list">
+        <div class="row">
+          <!-- Doctor Card -->
+          <div class="col-md-6 col-lg-4 col-xl-3 mb-4" *ngFor="let doctor of filteredDoctors">
+            <div class="doctor-card">
+              <!-- Doctor Image and Basic Info -->
+              <div class="doctor-image">
+                <img [src]="doctor.image" [alt]="doctor.name" class="img-fluid">
+                <div class="rating-badge">
+                  <span *ngFor="let star of getStarRating(doctor.rating)">
+                    <fa-icon [icon]="icons.star" class="text-warning"></fa-icon>
+                  </span>
+                  <span *ngIf="hasHalfStar(doctor.rating)" class="half-star">
+                    <fa-icon [icon]="icons.star" class="text-warning"></fa-icon>
+                  </span>
+                  <span *ngFor="let star of getEmptyStars(doctor.rating)">
+                    <fa-icon [icon]="icons.star" class="text-secondary"></fa-icon>
+                  </span>
+                  <span class="ms-1">{{ doctor.rating }} ({{ doctor.reviews }})</span>
+                </div>
+              </div>
+              
+              <!-- Doctor Info -->
+              <div class="doctor-info">
+                <h5>{{ doctor.name }}</h5>
+                <p class="specialty">{{ doctor.specialty }}</p>
+                
+                <div class="doctor-meta">
+                  <div class="meta-item">
+                    <fa-icon [icon]="icons.doctor"></fa-icon>
+                    {{ doctor.experience }} experience
+                  </div>
+                  <div class="meta-item">
+                    <fa-icon [icon]="icons.location"></fa-icon>
+                    {{ doctor.location }}
+                  </div>
+                  <div class="meta-item">
+                    <fa-icon [icon]="icons.calendar"></fa-icon>
+                    {{ doctor.availability }}
+                  </div>
+                </div>
+                
+                <!-- Expanded Details (Hidden by Default) -->
+                <div class="doctor-details" [class.expanded]="doctor.isExpanded">
+                  <div class="details-section">
+                    <h6>Consultation Fee</h6>
+                    <p>${{ doctor.consultationFee }}</p>
+                  </div>
+                  
+                  <div class="details-section">
+                    <h6>Languages Spoken</h6>
+                    <div class="languages-list">
+                      <span class="badge bg-light text-dark me-1 mb-1" *ngFor="let lang of doctor.languages">
+                        {{ lang }}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Action Buttons -->
+                <div class="doctor-actions">
+                  <button class="btn btn-outline-primary btn-sm me-2" >
+                    View Profile
+                  </button>
+                  <button class="btn btn-primary btn-sm" >
+                    Book Now
+                  </button>
+                </div>
+                
+                <!-- Toggle Details Button -->
+                <button 
+                  class="btn btn-sm btn-link toggle-details" 
+                  (click)="toggleDoctorDetails(doctor)"
+                >
+                  {{ doctor.isExpanded ? 'Show less' : 'Show more' }}
+                  <fa-icon [icon]="doctor.isExpanded ? icons.chevronUp : icons.chevronDown"></fa-icon>
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          <!-- No Results Message -->
+          <div class="col-12" *ngIf="filteredDoctors.length === 0">
+            <div class="no-results text-center py-5">
+              <h5>No doctors found</h5>
+              <p class="text-muted">Try adjusting your search or filter criteria</p>
+              <button class="btn btn-outline-primary" (click)="selectedSpecialty = 'All Specialties'; searchQuery = ''; filterDoctors()">
+                Reset Filters
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

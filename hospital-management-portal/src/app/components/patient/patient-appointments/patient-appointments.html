@@ -1,0 +1,128 @@
+<div class="appointments-container">
+  <div class="row mb-4">
+    <div class="col-12">
+      <h2>My Appointments</h2>
+      <p class="text-muted">Manage your upcoming and past appointments</p>
+    </div>
+  </div>
+
+  <!-- Upcoming Appointments -->
+  <div class="row mb-5">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <h5 class="mb-0">Upcoming Appointments</h5>
+          <button class="btn btn-primary btn-sm" routerLink="/find-doctors">
+            Book New Appointment
+          </button>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-hover">
+              <thead>
+                <tr>
+                  <th>Doctor</th>
+                  <th>Date & Time</th>
+                  <th>Location</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let appt of upcomingAppointments">
+                  <td>
+                    <strong>{{ appt.doctor }}</strong>
+                    <div class="small text-muted">{{ appt.specialty }}</div>
+                  </td>
+                  <td>
+                    {{ appt.date | date }}<br>
+                    <span class="small">{{ appt.time }}</span>
+                  </td>
+                  <td>
+                    <div class="d-flex align-items-center">
+                      <fa-icon [icon]="icons.location" class="me-2 text-muted"></fa-icon>
+                      <span>{{ appt.location }}</span>
+                    </div>
+                  </td>
+                  <td>
+                    <span class="badge" [ngClass]="'bg-' + appt.statusClass">
+                      <fa-icon [icon]="getStatusIcon(appt.status)" class="me-1"></fa-icon>
+                      {{ appt.status }}
+                    </span>
+                  </td>
+                  <td>
+                    <div class="dropdown">
+                      <button class="btn btn-sm btn-outline-secondary dropdown-toggle" 
+                              type="button" 
+                              data-bs-toggle="dropdown" 
+                              aria-expanded="false">
+                        <fa-icon [icon]="icons.menu"></fa-icon>
+                      </button>
+                      <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="#">View Details</a></li>
+                        <li><a class="dropdown-item" href="#">Reschedule</a></li>
+                        <li><a class="dropdown-item text-danger" href="#">Cancel</a></li>
+                      </ul>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Past Appointments -->
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header">
+          <h5 class="mb-0">Past Appointments</h5>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-hover">
+              <thead>
+                <tr>
+                  <th>Doctor</th>
+                  <th>Date & Time</th>
+                  <th>Location</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let appt of pastAppointments">
+                  <td>
+                    <strong>{{ appt.doctor }}</strong>
+                    <div class="small text-muted">{{ appt.specialty }}</div>
+                  </td>
+                  <td>
+                    {{ appt.date | date }}<br>
+                    <span class="small">{{ appt.time }}</span>
+                  </td>
+                  <td>
+                    <div class="d-flex align-items-center">
+                      <fa-icon [icon]="icons.location" class="me-2 text-muted"></fa-icon>
+                      <span>{{ appt.location }}</span>
+                    </div>
+                  </td>
+                  <td>
+                    <span class="badge" [ngClass]="'bg-' + appt.statusClass">
+                      {{ appt.status }}
+                    </span>
+                  </td>
+                  <td>
+                    <button class="btn btn-sm btn-outline-primary">View Details</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

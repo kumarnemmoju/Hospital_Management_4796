@@ -1,0 +1,321 @@
+<div class="appointments-container">
+  <!-- Header Section -->
+  <div class="appointments-header">
+    <h2 class="mb-0">
+      <i class="fas fa-calendar-alt me-2"></i>Appointments Management
+    </h2>
+    <div class="d-flex align-items-center gap-3">
+      <div class="input-group search-box">
+        <span class="input-group-text bg-white">
+          <i class="fas fa-search text-muted"></i>
+        </span>
+        <input
+          type="text"
+          class="form-control border-start-0"
+          placeholder="Search by patient, doctor or reason..."
+          [ngModel]="searchQuery()"
+          (ngModelChange)="onSearchChange($event)"
+        />
+      </div>
+      <div class="btn-group view-toggle">
+        <button
+          class="btn btn-outline-primary"
+          [class.active]="currentView() === 'day'"
+          (click)="changeView('day')"
+        >
+          <i class="fas fa-calendar-day me-1"></i> Day View
+        </button>
+        <button
+          class="btn btn-outline-primary"
+          [class.active]="currentView() === 'week'"
+          (click)="changeView('week')"
+        >
+          <i class="fas fa-calendar-week me-1"></i> Week View
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Date Picker and Filters -->
+  <div class="appointments-filters">
+    <div class="date-picker-container">
+      <label class="form-label">Select Date:</label>
+      <div class="date-picker-actions">
+        <button class="btn btn-sm btn-outline-secondary" (click)="prevDay()">
+          <i class="fas fa-chevron-left"></i>
+        </button>
+        <div class="date-input-container">
+          <input
+            type="text"
+            class="form-control date-input"
+            [value]="formatDate(selectedDate())"
+            readonly
+            (click)="toggleDatepicker()"
+          />
+          <div class="datepicker-dropdown" *ngIf="showDatepicker">
+            <ngb-datepicker
+              #dp
+              [ngModel]="selectedDate()"
+              (ngModelChange)="onDateSelect($event)"
+              [minDate]="{year: 1900, month: 1, day: 1}"
+              [maxDate]="{year: 2100, month: 12, day: 31}"
+            ></ngb-datepicker>
+          </div>
+        </div>
+        <button class="btn btn-sm btn-outline-secondary" (click)="nextDay()">
+          <i class="fas fa-chevron-right"></i>
+        </button>
+        <button class="btn btn-sm btn-outline-primary" (click)="setToday()">
+          Today
+        </button>
+      </div>
+    </div>
+
+    <div class="status-filters">
+      <label class="form-label">Filter by Status:</label>
+      <div class="btn-group">
+        @for (status of ['all', 'completed', 'scheduled', 'cancelled',
+        'no-show']; track status) {
+        <button
+          class="btn btn-sm"
+          [class.btn-primary]="status === 'all' && filterStatus() === status"
+          [class.btn-success]="status === 'completed' && filterStatus() === status"
+          [class.btn-info]="status === 'scheduled' && filterStatus() === status"
+          [class.btn-danger]="status === 'cancelled' && filterStatus() === status"
+          [class.btn-warning]="status === 'no-show' && filterStatus() === status"
+          (click)="changeStatus(status)"
+        >
+          {{ status === 'all' ? 'All' : (status | titlecase) }}
+        </button>
+        }
+      </div>
+    </div>
+  </div>
+
+  <!-- Current Appointments Section -->
+  <div class="current-appointments">
+    <h4 class="section-title">
+      <i class="fas fa-list-check me-2"></i>
+      {{ currentView() === 'day' ? 'Today\'s' : 'This Week\'s' }} Appointments
+      <span class="badge bg-primary ms-2"
+        >{{ filteredAppointments.length }}</span
+      >
+    </h4>
+
+    @if (filteredAppointments.length === 0) {
+    <div class="no-appointments">
+      <div class="alert alert-info">
+        <i class="fas fa-info-circle me-2"></i>
+        No appointments found for the selected {{ currentView() === 'day' ?
+        'day' : 'week' }}.
+      </div>
+    </div>
+    } @if (filteredAppointments.length > 0) {
+    <div class="appointments-list">
+      @for (appointment of filteredAppointments; track appointment.id) {
+      <div class="appointment-card">
+        <div class="appointment-header">
+          <div class="status-badge">
+            <span class="badge" [ngClass]="getStatusClass(appointment.status)">
+              {{ appointment.status | titlecase }}
+            </span>
+          </div>
+          <div class="appointment-time">
+            <i class="fas fa-clock me-1"></i>
+            {{ appointment.time }} ({{ appointment.duration }} mins)
+          </div>
+          <div class="appointment-actions">
+            <button
+              class="btn btn-sm btn-outline-primary"
+              (click)="generateInvoice(appointment)"
+            >
+              <i class="fas fa-file-invoice me-1"></i> Invoice
+            </button>
+          </div>
+        </div>
+
+        <div class="appointment-body">
+          <div class="patient-info">
+            <h5 class="patient-name">
+              <i class="fas fa-user me-2"></i>
+              {{ appointment.patient.name }}
+              <span class="patient-meta">
+                ({{ appointment.patient.age }} yrs, {{
+                appointment.patient.gender }})
+              </span>
+            </h5>
+            <div class="patient-details">
+              <div>
+                <strong>Contact:</strong> {{ appointment.patient.contact }}
+              </div>
+              <div>
+                <strong>Blood Group:</strong> {{ appointment.patient.bloodGroup
+                }}
+              </div>
+              <div>
+                <button
+                  class="btn btn-sm btn-outline-info"
+                  (click)="viewMedicalHistory(appointment.patient)"
+                >
+                  <i class="fas fa-file-medical me-1"></i> View Medical History
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="doctor-info">
+            <h6 class="doctor-name">
+              <i class="fas fa-user-md me-2"></i>
+              {{ appointment.doctor.name }}
+              <span class="doctor-specialty"
+                >({{ appointment.doctor.specialty }})</span
+              >
+            </h6>
+            <div class="doctor-contact">
+              <div>
+                <i class="fas fa-phone me-1"></i> {{ appointment.doctor.contact
+                }}
+              </div>
+              <div>
+                <i class="fas fa-envelope me-1"></i> {{ appointment.doctor.email
+                }}
+              </div>
+            </div>
+          </div>
+
+          <div class="appointment-details">
+            <div class="reason">
+              <strong
+                ><i class="fas fa-comment-medical me-1"></i> Reason:</strong
+              >
+              {{ appointment.reason }}
+            </div>
+            @if (appointment.notes) {
+            <div class="notes">
+              <strong><i class="fas fa-sticky-note me-1"></i> Notes:</strong>
+              {{ appointment.notes }}
+            </div>
+            }
+          </div>
+
+          @if (appointment.tests.length > 0) {
+          <div class="tests-section">
+            <h6><i class="fas fa-flask me-2"></i>Tests</h6>
+            <div class="tests-list">
+              @for (test of appointment.tests; track test.id) {
+              <div class="test-item">
+                <span class="test-name">{{ test.name }}</span>
+                <span
+                  class="badge"
+                  [ngClass]="{
+                          'bg-secondary': test.status === 'pending',
+                          'bg-success': test.status === 'completed',
+                          'bg-danger': test.status === 'cancelled'
+                        }"
+                >
+                  {{ test.status | titlecase }}
+                </span>
+                @if (test.result) {
+                <span class="test-result">
+                  <strong>Result:</strong> {{ test.result }}
+                </span>
+                }
+              </div>
+              }
+            </div>
+          </div>
+          } @if (appointment.followUpRequired) {
+          <div class="followup-info">
+            <div class="alert alert-warning mb-0">
+              <i class="fas fa-calendar-plus me-2"></i>
+              Follow-up required on {{ appointment.followUpDate |
+              date:'mediumDate' }}
+            </div>
+          </div>
+          }
+        </div>
+      </div>
+      }
+    </div>
+    }
+  </div>
+
+  <!-- Recent Appointments Section -->
+  <div class="recent-appointments">
+    <h4 class="section-title">
+      <i class="fas fa-history me-2"></i>
+      Recent Completed Appointments (Last 7 Days)
+      <span class="badge bg-success ms-2"
+        >{{ lastWeekAppointments.length }}</span
+      >
+    </h4>
+
+    @if (lastWeekAppointments.length === 0) {
+    <div class="no-appointments">
+      <div class="alert alert-info">
+        <i class="fas fa-info-circle me-2"></i>
+        No completed appointments in the last week.
+      </div>
+    </div>
+    } @if (lastWeekAppointments.length > 0) {
+    <div class="recent-appointments-table">
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Patient</th>
+            <th>Doctor</th>
+            <th>Reason</th>
+            <th>Tests</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (appointment of lastWeekAppointments; track appointment.id) {
+          <tr>
+            <td>
+              {{ appointment.date | date:'shortDate' }} {{ appointment.time }}
+            </td>
+            <td>
+              <strong>{{ appointment.patient.name }}</strong>
+              <div class="small text-muted">
+                {{ appointment.patient.age }} yrs, {{ appointment.patient.gender
+                }}
+              </div>
+            </td>
+            <td>
+              {{ appointment.doctor.name }}
+              <div class="small text-muted">
+                {{ appointment.doctor.specialty }}
+              </div>
+            </td>
+            <td>{{ appointment.reason }}</td>
+            <td>
+              @for (test of appointment.tests; track test.id) {
+              <span class="badge bg-light text-dark me-1">
+                {{ test.name }}
+              </span>
+              }
+            </td>
+            <td>
+              <button
+                class="btn btn-sm btn-outline-primary"
+                (click)="generateInvoice(appointment)"
+              >
+                <i class="fas fa-file-invoice"></i>
+              </button>
+              <button
+                class="btn btn-sm btn-outline-info ms-1"
+                (click)="viewMedicalHistory(appointment.patient)"
+              >
+                <i class="fas fa-file-medical"></i>
+              </button>
+            </td>
+          </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+    }
+  </div>
+</div>

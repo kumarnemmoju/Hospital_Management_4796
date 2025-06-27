@@ -1,0 +1,133 @@
+<!-- Patient Header -->
+<div class="admin-header text-white shadow sticky-top">
+  <div
+    class="container-fluid d-flex justify-content-between align-items-center h-100 px-0"
+  >
+    <img src="assets/logo2.jpg" alt="HealGrid Logo" class="logo-img" />
+
+    <nav class="d-flex align-items-center gap-4">
+      <ul class="nav gap-3 m-0">
+        <li class="nav-item">
+          <a
+            class="nav-link text-white fw-semibold"
+            routerLink="/patient/dashboard"
+            routerLinkActive="active"
+            >Dashboard</a
+          >
+        </li>
+        <li class="nav-item">
+          <a
+            class="nav-link text-white fw-semibold"
+            routerLink="/patient/find-doctors"
+            routerLinkActive="active"
+            >Find Doctors</a
+          >
+        </li>
+        <li class="nav-item">
+          <a
+            class="nav-link text-white fw-semibold"
+            routerLink="/patient/appointments"
+            routerLinkActive="active"
+            >Appointments</a
+          >
+        </li>
+        <li class="nav-item">
+          <a
+            class="nav-link text-white fw-semibold"
+            routerLink="/patient/medical-records"
+            routerLinkActive="active"
+            >Medical Records</a
+          >
+        </li>
+        <li class="nav-item">
+          <a
+            class="nav-link text-white fw-semibold"
+            routerLink="/patient/billing"
+            routerLinkActive="active"
+            >Billing</a
+          >
+        </li>
+      </ul>
+
+      <!-- Profile Dropdown -->
+      <div class="dropdown">
+        <a
+          href="#"
+          class="d-block link-light text-decoration-none dropdown-toggle"
+          id="patientDropdown"
+          data-bs-toggle="dropdown"
+          aria-expanded="false"
+        >
+          <img
+            src="https://via.placeholder.com/40x40"
+            alt="Patient"
+            class="rounded-circle"
+            width="40"
+            height="40"
+          />
+        </a>
+        <ul
+          class="dropdown-menu dropdown-menu-end mt-2 custom-dropdown"
+          aria-labelledby="patientDropdown"
+        >
+          <li>
+            <a class="dropdown-item" routerLink="/profile"
+              ><i class="bi bi-person me-2"></i>Profile</a
+            >
+          </li>
+          <li>
+            <a class="dropdown-item" routerLink="/appointments"
+              ><i class="bi bi-calendar-check me-2"></i>Appointments</a
+            >
+          </li>
+          <li>
+            <a class="dropdown-item" routerLink="/medical-records"
+              ><i class="bi bi-file-medical me-2"></i>Medical Records</a
+            >
+          </li>
+          <li><hr class="dropdown-divider" /></li>
+          <li>
+            <a class="dropdown-item" routerLink="/settings"
+              ><i class="bi bi-gear me-2"></i>Settings</a
+            >
+          </li>
+          <li>
+            <a class="dropdown-item text-danger" routerLink="/logout"
+              ><i class="bi bi-box-arrow-right me-2"></i>Logout</a
+            >
+          </li>
+        </ul>
+      </div>
+    </nav>
+  </div>
+</div>
+
+<!-- Layout: Sidebar and Main Content -->
+<div class="d-flex">
+  <!-- Side Navbar (starts below the header) -->
+  <div class="side-navbar d-flex flex-column align-items-center py-4">
+    <a routerLink="/patient-dashboard" class="text-white mb-4" title="Dashboard"
+      ><i class="bi bi-speedometer2 fs-4"></i
+    ></a>
+    <a routerLink="/find-doctors" class="text-white mb-4" title="Find Doctors"
+      ><i class="bi bi-search-heart fs-4"></i
+    ></a>
+    <a routerLink="/appointments" class="text-white mb-4" title="Appointments"
+      ><i class="bi bi-calendar-check fs-4"></i
+    ></a>
+    <a
+      routerLink="/medical-records"
+      class="text-white mb-4"
+      title="Medical Records"
+      ><i class="bi bi-file-medical fs-4"></i
+    ></a>
+    <a routerLink="/billing" class="text-white mb-4" title="Billing"
+      ><i class="bi bi-receipt fs-4"></i
+    ></a>
+  </div>
+
+  <!-- Main content -->
+  <div class="flex-grow-1 p-4">
+    <router-outlet></router-outlet>
+  </div>
+</div>

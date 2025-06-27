@@ -1,0 +1,142 @@
+<div class="profile-container">
+  <div class="row mb-4">
+    <div class="col-12">
+      <h2>My Profile</h2>
+      <p class="text-muted">Manage your personal and health information</p>
+    </div>
+  </div>
+
+  <div class="row">
+    <!-- Profile Summary -->
+    <div class="col-md-4 mb-4 mb-md-0">
+      <div class="card">
+        <div class="card-body text-center">
+          <div class="profile-avatar mb-3">
+            <img src="https://via.placeholder.com/150" alt="Profile" class="rounded-circle">
+          </div>
+          <h4>{{ patient.name }}</h4>
+          <p class="text-muted">Patient since 2020</p>
+          
+          <div class="d-flex justify-content-center gap-2 mb-4">
+            <button class="btn btn-outline-primary btn-sm">
+              <fa-icon [icon]="icons.edit" class="me-1"></fa-icon>
+              Edit Profile
+            </button>
+            <button class="btn btn-outline-secondary btn-sm">
+              <fa-icon [icon]="icons.security" class="me-1"></fa-icon>
+              Security
+            </button>
+          </div>
+          
+          <div class="profile-meta">
+            <div class="meta-item">
+              <fa-icon [icon]="icons.email" class="me-2"></fa-icon>
+              {{ patient.email }}
+            </div>
+            <div class="meta-item">
+              <fa-icon [icon]="icons.phone" class="me-2"></fa-icon>
+              {{ patient.phone }}
+            </div>
+            <div class="meta-item">
+              <fa-icon [icon]="icons.gender" class="me-2"></fa-icon>
+              {{ patient.gender }}
+            </div>
+            <div class="meta-item">
+              <fa-icon [icon]="icons.calendar" class="me-2"></fa-icon>
+              {{ patient.dob | date }}
+            </div>
+            <div class="meta-item">
+              <fa-icon [icon]="icons.location" class="me-2"></fa-icon>
+              {{ patient.address }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Health Information -->
+    <div class="col-md-8">
+      <div class="card mb-4">
+        <div class="card-header">
+          <h5 class="mb-0">Health Information</h5>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Blood Group</label>
+              <div class="form-control-static">{{ patient.bloodGroup }}</div>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Height</label>
+              <div class="form-control-static">{{ patient.height }}</div>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Weight</label>
+              <div class="form-control-static">{{ patient.weight }}</div>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label">Insurance</label>
+              <div class="form-control-static">{{ patient.insurance }}</div>
+            </div>
+          </div>
+          
+          <div class="row">
+            <div class="col-md-6">
+              <label class="form-label">Allergies</label>
+              <div class="form-control-static">
+                <div *ngFor="let allergy of patient.allergies" class="badge bg-light text-dark me-1 mb-1">
+                  {{ allergy }}
+                </div>
+                <div *ngIf="patient.allergies.length === 0">None</div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Medical Conditions</label>
+              <div class="form-control-static">
+                <div *ngFor="let condition of patient.conditions" class="badge bg-light text-dark me-1 mb-1">
+                  {{ condition }}
+                </div>
+                <div *ngIf="patient.conditions.length === 0">None</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Emergency Contacts -->
+      <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <h5 class="mb-0">Emergency Contacts</h5>
+          <button class="btn btn-sm btn-outline-primary">Add Contact</button>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-hover">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Relationship</th>
+                  <th>Phone</th>
+                  <th>Email</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let contact of emergencyContacts">
+                  <td>{{ contact.name }}</td>
+                  <td>{{ contact.relationship }}</td>
+                  <td>{{ contact.phone }}</td>
+                  <td>{{ contact.email }}</td>
+                  <td>
+                    <button class="btn btn-sm btn-outline-primary">Edit</button>
+                    <button class="btn btn-sm btn-outline-danger ms-1">Remove</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

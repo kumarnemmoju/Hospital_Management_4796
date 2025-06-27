@@ -1,0 +1,270 @@
+<div class="patients-container">
+  <!-- Header Section -->
+  <div class="patients-header">
+    <h2 class="mb-0">
+      <fa-icon [icon]="icons.userInjured" class="me-2"></fa-icon>Patients
+      Records
+    </h2>
+    <div class="d-flex align-items-center gap-3">
+      <div class="input-group search-box">
+        <span class="input-group-text bg-white">
+          <fa-icon [icon]="icons.search" class="text-muted"></fa-icon>
+        </span>
+        <input
+          type="text"
+          class="form-control border-start-0"
+          placeholder="Search patients by name, contact or email..."
+          [ngModel]="searchQuery()"
+          (ngModelChange)="updateSearch($event)"
+        />
+      </div>
+      <button class="btn btn-primary" (click)="addNewPatient()">
+        <fa-icon [icon]="icons.plus" class="me-1"></fa-icon> Add New Patient
+      </button>
+    </div>
+  </div>
+
+  <!-- Filters Section -->
+  <div class="patients-filters">
+    <div class="filter-group">
+      <label class="form-label">Filter by Gender:</label>
+      <div class="btn-group">
+        <button
+          class="btn btn-sm btn-outline-secondary"
+          [class.active]="genderFilter() === 'all'"
+          (click)="changeGenderFilter('all')"
+        >
+          All
+        </button>
+        <button
+          class="btn btn-sm btn-outline-secondary"
+          [class.active]="genderFilter() === 'male'"
+          (click)="changeGenderFilter('male')"
+        >
+          Male
+        </button>
+        <button
+          class="btn btn-sm btn-outline-secondary"
+          [class.active]="genderFilter() === 'female'"
+          (click)="changeGenderFilter('female')"
+        >
+          Female
+        </button>
+      </div>
+    </div>
+
+    <div class="filter-group">
+      <label class="form-label">Filter by Blood Group:</label>
+      <select
+        class="form-select form-select-sm"
+        [ngModel]="bloodGroupFilter()"
+        (ngModelChange)="changeBloodGroupFilter($event)"
+      >
+        <option value="all">All Blood Groups</option>
+        <option value="A+">A+</option>
+        <option value="A-">A-</option>
+        <option value="B+">B+</option>
+        <option value="B-">B-</option>
+        <option value="AB+">AB+</option>
+        <option value="AB-">AB-</option>
+        <option value="O+">O+</option>
+        <option value="O-">O-</option>
+      </select>
+    </div>
+
+    <div class="filter-group">
+      <label class="form-label">Sort By:</label>
+      <select
+        class="form-select form-select-sm"
+        [ngModel]="sortBy()"
+        (ngModelChange)="changeSort($event)"
+      >
+        <option value="name-asc">Name (A-Z)</option>
+        <option value="name-desc">Name (Z-A)</option>
+        <option value="age-asc">Age (Low to High)</option>
+        <option value="age-desc">Age (High to Low)</option>
+        <option value="recent">Recently Added</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Patients List -->
+  <div class="patients-list">
+    <div class="list-header">
+      <div class="row">
+        <div class="col-md-3">Patient Name</div>
+        <div class="col-md-2">Contact</div>
+        <div class="col-md-1">Age</div>
+        <div class="col-md-1">Gender</div>
+        <div class="col-md-1">Blood Group</div>
+        <div class="col-md-2">Last Visit</div>
+        <div class="col-md-2">Actions</div>
+      </div>
+    </div>
+
+    @if (filteredPatients().length === 0) {
+    <div class="no-patients">
+      <div class="alert alert-info">
+        <fa-icon [icon]="icons.infoCircle" class="me-2"></fa-icon>
+        No patients found matching your criteria.
+      </div>
+    </div>
+    } @for (patient of paginatedPatients(); track patient.id; let i = $index) {
+    <div class="patient-item">
+      <div
+        class="patient-summary"
+        data-bs-toggle="collapse"
+        [attr.data-bs-target]="'#patientDetails' + i"
+      >
+        <div class="row align-items-center">
+          <div class="col-md-3">
+            <strong>{{ patient.name }}</strong>
+            <div class="small text-muted">{{ patient.email }}</div>
+          </div>
+          <div class="col-md-2">{{ patient.contact }}</div>
+          <div class="col-md-1">{{ patient.age }} yrs</div>
+          <div class="col-md-1">
+            <span
+              class="badge"
+              [ngClass]="{
+    'bg-info': patient.gender.toLowerCase() === 'male',
+    'bg-pink': patient.gender.toLowerCase() === 'female'
+  }"
+            >
+              {{ patient.gender | titlecase }}
+            </span>
+          </div>
+          <div class="col-md-1">
+            <span class="badge bg-danger">{{ patient.bloodGroup }}</span>
+          </div>
+          <div class="col-md-2">-</div>
+          <div class="col-md-2">
+            <button
+              class="btn btn-sm btn-outline-primary me-1"
+              (click)="editPatient(patient, $event)"
+            >
+              <fa-icon [icon]="icons.edit"></fa-icon>
+            </button>
+            <button
+              class="btn btn-sm btn-outline-secondary me-1"
+              (click)="viewMedicalHistory(patient, $event)"
+            >
+              <fa-icon [icon]="icons.fileMedical"></fa-icon>
+            </button>
+            <button
+              class="btn btn-sm btn-outline-danger"
+              (click)="deletePatient(patient, $event)"
+            >
+              <fa-icon [icon]="icons.trash"></fa-icon>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="collapse patient-details" [id]="'patientDetails' + i">
+        <div class="details-content">
+          <div class="row">
+            <div class="col-md-6">
+              <div class="detail-section">
+                <h5>
+                  <fa-icon [icon]="icons.infoCircle" class="me-2"></fa-icon
+                  >Basic Information
+                </h5>
+                <div class="row">
+                  <div class="col-6">
+                    <p><strong>Address:</strong> {{ patient.address }}</p>
+                  </div>
+                  <div class="col-6">
+                    <p><strong>Height:</strong> {{ patient.height }}</p>
+                  </div>
+                  <div class="col-6">
+                    <p><strong>Weight:</strong> {{ patient.weight }}</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="detail-section">
+                <h5>
+                  <fa-icon [icon]="icons.allergies" class="me-2"></fa-icon
+                  >Allergies
+                </h5>
+                @if (patient.allergies.length > 0) {
+                <div>
+                  @for (allergy of patient.allergies; track allergy) {
+                  <span class="badge bg-warning text-dark me-1 mb-1"
+                    >{{ allergy }}</span
+                  >
+                  }
+                </div>
+                } @else {
+                <p class="text-muted">No known allergies</p>
+                }
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <div class="detail-section">
+                <h5>
+                  <fa-icon [icon]="icons.history" class="me-2"></fa-icon>Medical
+                  History
+                </h5>
+                @if (patient.medicalHistory.length > 0) {
+                <ul class="medical-history-list">
+                  @for (item of patient.medicalHistory; track item) {
+                  <li>{{ item }}</li>
+                  }
+                </ul>
+                } @else {
+                <p class="text-muted">No medical history recorded</p>
+                }
+              </div>
+
+              <div class="detail-section">
+                <h5>
+                  <fa-icon [icon]="icons.pills" class="me-2"></fa-icon>Current
+                  Medications
+                </h5>
+                @if (patient.currentMedications.length > 0) {
+                <ul class="medications-list">
+                  @for (med of patient.currentMedications; track med) {
+                  <li>{{ med }}</li>
+                  }
+                </ul>
+                } @else {
+                <p class="text-muted">No current medications</p>
+                }
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    }
+  </div>
+
+  <!-- Pagination section -->
+  <div
+    class="patients-pagination"
+    *ngIf="filteredPatients().length > itemsPerPage"
+  >
+    <nav aria-label="Patients pagination">
+      <ul class="pagination justify-content-center">
+        <li class="page-item" [class.disabled]="currentPage() === 1">
+          <a class="page-link" (click)="previousPage()">Previous</a>
+        </li>
+        @for (page of getPages(); track page) {
+        <li class="page-item" [class.active]="page === currentPage()">
+          <a class="page-link" (click)="goToPage(page)">{{ page }}</a>
+        </li>
+        }
+        <li class="page-item" [class.disabled]="currentPage() === totalPages()">
+          <a class="page-link" (click)="nextPage()">Next</a>
+        </li>
+      </ul>
+    </nav>
+    <div class="text-center text-muted small mt-2">
+      Showing {{ displayRange().start }} to {{ displayRange().end }} of {{
+      displayRange().total }} patients
+    </div>
+  </div>
+</div>

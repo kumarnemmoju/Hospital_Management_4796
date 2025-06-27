@@ -1,0 +1,12 @@
+/* doctors.css */
+:root {
+  --primary: #1a7f5c;
+  --primary-light: #e8f5f0;
+  --primary-dark: #0d4a34;
+  --accent: #ff914d;
+  --text-dark: #2d3748;
+  --text-light: #718096;
+  --background: #f8fbfa;
+  --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  --card-shadow-hover: 0 8px 30px rgba(0, 0, 0, 0.12);
+}

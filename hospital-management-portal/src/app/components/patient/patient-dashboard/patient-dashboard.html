@@ -1,0 +1,250 @@
+<div class="dashboard-container">
+  <div class="row mb-4">
+    <div class="col-12">
+      <h2 class="mb-0">Welcome back, John!</h2>
+      <p class="text-muted">Here's what's happening with your health today</p>
+    </div>
+  </div>
+
+  <!-- Quick Stats -->
+  <div class="row mb-4">
+    <div class="col-md-3 mb-3 mb-md-0">
+      <div class="card stat-card">
+        <div class="card-body">
+          <div class="d-flex align-items-center">
+            <div class="stat-icon me-3">
+              <fa-icon [icon]="icons.appointments" size="lg"></fa-icon>
+            </div>
+            <div>
+              <h6 class="mb-0">Appointments</h6>
+              <h3 class="mb-0">2</h3>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3 mb-3 mb-md-0">
+      <div class="card stat-card">
+        <div class="card-body">
+          <div class="d-flex align-items-center">
+            <div class="stat-icon me-3">
+              <fa-icon [icon]="icons.medications" size="lg"></fa-icon>
+            </div>
+            <div>
+              <h6 class="mb-0">Medications</h6>
+              <h3 class="mb-0">3</h3>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3 mb-3 mb-md-0">
+      <div class="card stat-card">
+        <div class="card-body">
+          <div class="d-flex align-items-center">
+            <div class="stat-icon me-3">
+              <fa-icon [icon]="icons.records" size="lg"></fa-icon>
+            </div>
+            <div>
+              <h6 class="mb-0">Records</h6>
+              <h3 class="mb-0">5</h3>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card stat-card">
+        <div class="card-body">
+          <div class="d-flex align-items-center">
+            <div class="stat-icon me-3">
+              <fa-icon [icon]="icons.notifications" size="lg"></fa-icon>
+            </div>
+            <div>
+              <h6 class="mb-0">Alerts</h6>
+              <h3 class="mb-0">1</h3>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="row">
+    <!-- Upcoming Appointments -->
+    <div class="col-lg-6 mb-4">
+      <div class="card h-100">
+        <div
+          class="card-header d-flex justify-content-between align-items-center"
+        >
+          <h5 class="mb-0">Upcoming Appointments</h5>
+          <a routerLink="/appointments" class="btn btn-sm btn-outline-primary"
+            >View All</a
+          >
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-hover">
+              <thead>
+                <tr>
+                  <th>Doctor</th>
+                  <th>Date & Time</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let appt of upcomingAppointments">
+                  <td>
+                    <strong>{{ appt.doctor }}</strong>
+                    <div class="small text-muted">{{ appt.specialty }}</div>
+                  </td>
+                  <td>
+                    {{ appt.date | date }}<br />
+                    <span class="small">{{ appt.time }}</span>
+                  </td>
+                  <td>
+                    <span class="badge bg-success">{{ appt.status }}</span>
+                  </td>
+                  <td>
+                    <button class="btn btn-sm btn-outline-primary">
+                      Details
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Health Metrics -->
+    <div class="col-lg-6 mb-4">
+      <div class="card h-100">
+        <div class="card-header">
+          <h5 class="mb-0">Health Metrics</h5>
+        </div>
+        <div class="card-body">
+          <div class="row text-center">
+            <div class="col-6 col-md-3 mb-4">
+              <div class="metric-card">
+                <div class="metric-value">
+                  {{ healthMetrics.bloodPressure }}
+                </div>
+                <div class="metric-label">Blood Pressure</div>
+              </div>
+            </div>
+            <div class="col-6 col-md-3 mb-4">
+              <div class="metric-card">
+                <div class="metric-value">{{ healthMetrics.heartRate }}</div>
+                <div class="metric-label">Heart Rate</div>
+              </div>
+            </div>
+            <div class="col-6 col-md-3 mb-4">
+              <div class="metric-card">
+                <div class="metric-value">{{ healthMetrics.glucose }}</div>
+                <div class="metric-label">Glucose</div>
+              </div>
+            </div>
+            <div class="col-6 col-md-3 mb-4">
+              <div class="metric-card">
+                <div class="metric-value">{{ healthMetrics.temperature }}</div>
+                <div class="metric-label">Temperature</div>
+              </div>
+            </div>
+          </div>
+          <div class="health-chart-placeholder">
+            <div class="d-flex justify-content-center align-items-center h-100">
+              <fa-icon
+                [icon]="icons.health"
+                size="3x"
+                class="text-muted"
+              ></fa-icon>
+              <p class="ms-3 mb-0">Health trend chart will appear here</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Second Row -->
+  <div class="row">
+    <!-- Recent Medications -->
+    <div class="col-lg-6 mb-4">
+      <div class="card h-100">
+        <div
+          class="card-header d-flex justify-content-between align-items-center"
+        >
+          <h5 class="mb-0">Current Medications</h5>
+          <a
+            routerLink="/medical-records"
+            class="btn btn-sm btn-outline-primary"
+            >View All</a
+          >
+        </div>
+        <div class="card-body">
+          <ul class="list-group list-group-flush">
+            <li
+              class="list-group-item d-flex justify-content-between align-items-center"
+              *ngFor="let med of recentMedications"
+            >
+              <div>
+                <strong>{{ med.name }}</strong>
+                <div class="small text-muted">{{ med.dosage }}</div>
+              </div>
+              <span class="badge bg-light text-dark">{{ med.frequency }}</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="col-lg-6">
+      <div class="card h-100">
+        <div class="card-header">
+          <h5 class="mb-0">Quick Actions</h5>
+        </div>
+        <div class="card-body">
+          <div class="row text-center">
+            <div class="col-6 col-md-3 mb-3">
+              <a routerLink="/find-doctors" class="quick-action">
+                <div class="action-icon">
+                  <fa-icon [icon]="icons.doctors" size="lg"></fa-icon>
+                </div>
+                <div class="action-label">Find Doctors</div>
+              </a>
+            </div>
+            <div class="col-6 col-md-3 mb-3">
+              <a routerLink="/appointments" class="quick-action">
+                <div class="action-icon">
+                  <fa-icon [icon]="icons.appointments" size="lg"></fa-icon>
+                </div>
+                <div class="action-label">Book Appointment</div>
+              </a>
+            </div>
+            <div class="col-6 col-md-3 mb-3">
+              <a routerLink="/medical-records" class="quick-action">
+                <div class="action-icon">
+                  <fa-icon [icon]="icons.records" size="lg"></fa-icon>
+                </div>
+                <div class="action-label">View Records</div>
+              </a>
+            </div>
+            <div class="col-6 col-md-3 mb-3">
+              <a routerLink="/billing" class="quick-action">
+                <div class="action-icon">
+                  <fa-icon [icon]="icons.medications" size="lg"></fa-icon>
+                </div>
+                <div class="action-label">Pay Bills</div>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

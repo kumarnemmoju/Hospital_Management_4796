@@ -1,0 +1,321 @@
+<div class="billing-container">
+  <!-- Header Section -->
+  <div class="billing-header">
+    <h2 class="mb-0">
+      <fa-icon [icon]="icons.invoice" class="me-2"></fa-icon>Billing Management
+    </h2>
+    <div class="d-flex align-items-center gap-3">
+      <div class="input-group search-box">
+        <span class="input-group-text bg-white">
+          <fa-icon [icon]="icons.search" class="text-muted"></fa-icon>
+        </span>
+        <input
+          type="text"
+          class="form-control border-start-0"
+          placeholder="Search bills by patient, doctor or ID..."
+          [(ngModel)]="searchQuery"
+        />
+      </div>
+    </div>
+  </div>
+
+  <!-- Filters Section -->
+  <div class="billing-filters">
+    <div class="filter-group">
+      <label class="form-label">Filter by Status:</label>
+      <div class="btn-group">
+        <button
+          class="btn btn-sm btn-outline-secondary"
+          [class.active]="statusFilter() === 'all'"
+          (click)="statusFilter.set('all')"
+        >
+          All
+        </button>
+        <button
+          class="btn btn-sm btn-outline-secondary"
+          [class.active]="statusFilter() === 'pending'"
+          (click)="statusFilter.set('pending')"
+        >
+          Pending
+        </button>
+        <button
+          class="btn btn-sm btn-outline-secondary"
+          [class.active]="statusFilter() === 'paid'"
+          (click)="statusFilter.set('paid')"
+        >
+          Paid
+        </button>
+        <button
+          class="btn btn-sm btn-outline-secondary"
+          [class.active]="statusFilter() === 'cancelled'"
+          (click)="statusFilter.set('cancelled')"
+        >
+          Cancelled
+        </button>
+      </div>
+    </div>
+
+    <div class="filter-group">
+      <label class="form-label">Filter by Date:</label>
+      <div class="btn-group">
+        <button
+          class="btn btn-sm btn-outline-secondary"
+          [class.active]="dateFilter() === 'all'"
+          (click)="dateFilter.set('all')"
+        >
+          All
+        </button>
+        <button
+          class="btn btn-sm btn-outline-secondary"
+          [class.active]="dateFilter() === 'today'"
+          (click)="dateFilter.set('today')"
+        >
+          Today
+        </button>
+        <button
+          class="btn btn-sm btn-outline-secondary"
+          [class.active]="dateFilter() === 'week'"
+          (click)="dateFilter.set('week')"
+        >
+          This Week
+        </button>
+        <button
+          class="btn btn-sm btn-outline-secondary"
+          [class.active]="dateFilter() === 'month'"
+          (click)="dateFilter.set('month')"
+        >
+          This Month
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Billing Content -->
+  <div class="billing-content">
+    <div class="row">
+      <!-- Bills List -->
+      <div class="col-md-8">
+        <div class="bills-list">
+          <div class="list-header">
+            <div class="row">
+              <div class="col-md-2">Bill ID</div>
+              <div class="col-md-3">Patient</div>
+              <div class="col-md-3">Doctor</div>
+              <div class="col-md-2">Date</div>
+              <div class="col-md-1">Amount</div>
+              <div class="col-md-1">Status</div>
+            </div>
+          </div>
+
+          @if (filteredBills().length === 0) {
+          <div class="no-bills">
+            <div class="alert alert-info">
+              <fa-icon [icon]="icons.search" class="me-2"></fa-icon>
+              No bills found matching your criteria.
+            </div>
+          </div>
+          } @for (bill of filteredBills(); track bill.id) {
+          <div class="bill-item">
+            <div class="row align-items-center">
+              <div class="col-md-2">#{{ bill.id }}</div>
+              <div class="col-md-3">
+                <strong>{{ bill.patient.name }}</strong>
+                <div class="small text-muted">
+                  {{ bill.patient.insuranceProvider }}
+                </div>
+              </div>
+              <div class="col-md-3">
+                <strong>{{ bill.doctor.name }}</strong>
+                <div class="small text-muted">{{ bill.doctor.specialty }}</div>
+              </div>
+              <div class="col-md-2">{{ formatDate(bill.date) }}</div>
+              <div class="col-md-1">
+                {{ formatCurrency(calculateBillTotal(bill)) }}
+              </div>
+              <div class="col-md-1">
+                <span class="badge" [ngClass]="getStatusClass(bill.status)">
+                  {{ bill.status | titlecase }}
+                </span>
+              </div>
+            </div>
+            <div class="bill-actions">
+              <button
+                class="btn btn-sm btn-outline-primary me-2"
+                (click)="printBill(bill)"
+              >
+                <fa-icon [icon]="icons.print" class="me-1"></fa-icon> Print
+              </button>
+              <button
+                class="btn btn-sm btn-outline-secondary me-2"
+                (click)="downloadBill(bill)"
+              >
+                <fa-icon [icon]="icons.download" class="me-1"></fa-icon>
+                Download
+              </button>
+              @if (bill.paymentMethod) {
+              <span class="badge bg-light text-dark me-2">
+                <fa-icon [icon]="icons.payment" class="me-1"></fa-icon>
+                {{ bill.paymentMethod }}
+              </span>
+              }
+            </div>
+          </div>
+          }
+        </div>
+      </div>
+
+      <!-- Create New Bill -->
+      <div class="col-md-4">
+        <div class="new-bill-card">
+          <h4 class="card-title">
+            <fa-icon [icon]="icons.plus" class="me-2"></fa-icon>Create New Bill
+          </h4>
+
+          <div class="form-group">
+            <label class="form-label">Patient</label>
+            <select class="form-select" [(ngModel)]="selectedPatientId">
+              <option [value]="null">Select Patient</option>
+              @for (patient of patients(); track patient.id) {
+              <option [value]="patient.id">
+                {{ patient.name }} ({{ patient.insuranceProvider }})
+              </option>
+              }
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Doctor</label>
+            <select class="form-select" [(ngModel)]="selectedDoctorId">
+              <option [value]="null">Select Doctor</option>
+              @for (doctor of doctors(); track doctor.id) {
+              <option [value]="doctor.id">
+                {{ doctor.name }} ({{ doctor.specialty }})
+              </option>
+              }
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Date</label>
+            <input
+              type="date"
+              class="form-control"
+              [ngModel]="newBill().date | date:'yyyy-MM-dd'"
+              (ngModelChange)="updateDate($event)"
+            />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Add Services</label>
+            <div class="input-group">
+              <select class="form-select" [(ngModel)]="selectedServiceId">
+                <option [value]="null">Select Service</option>
+                @for (service of services(); track service.id) {
+                <option [value]="service.id">
+                  {{ service.name }} ({{ formatCurrency(service.cost) }})
+                </option>
+                }
+              </select>
+              <input
+                type="number"
+                class="form-control"
+                style="max-width: 80px"
+                min="1"
+                [(ngModel)]="serviceQuantity"
+              />
+              <button class="btn btn-primary" (click)="addService()">
+                <fa-icon [icon]="icons.plus"></fa-icon>
+              </button>
+            </div>
+          </div>
+
+          <div class="services-list">
+            @for (service of newBill().services; track $index; let i = $index) {
+            <div class="service-item">
+              <div>
+                <strong>{{ service.name }}</strong>
+                <div class="small text-muted">
+                  <fa-icon
+                    [icon]="service.type === 'medication' ? icons.medication : 
+                              service.type === 'test' ? icons.test : 
+                              icons.patient"
+                    class="me-1"
+                  >
+                  </fa-icon>
+                  {{ service.type | titlecase }}
+                </div>
+              </div>
+              <div class="d-flex align-items-center">
+                <span class="me-3"
+                  >{{ service.quantity }} × {{ formatCurrency(service.cost)
+                  }}</span
+                >
+                <button
+                  class="btn btn-sm btn-outline-danger"
+                  (click)="removeService(i)"
+                >
+                  <fa-icon [icon]="icons.trash"></fa-icon>
+                </button>
+              </div>
+            </div>
+            } @if (!newBill().services?.length) {
+            <div class="text-muted text-center py-3">No services added</div>
+            }
+          </div>
+
+          <div class="bill-summary">
+            <div class="summary-item">
+              <span>Subtotal:</span>
+              <span>{{ formatCurrency(subTotal()) }}</span>
+            </div>
+            <div class="summary-item">
+              <span>Discount:</span>
+              <input
+                type="number"
+                class="form-control form-control-sm"
+                style="max-width: 100px"
+                min="0"
+                [max]="subTotal()"
+                [ngModel]="newBill().discount || 0"
+                (ngModelChange)="updateDiscount($event)"
+              />
+            </div>
+            <div class="summary-item">
+              <span>Tax:</span>
+              <input
+                type="number"
+                class="form-control form-control-sm"
+                style="max-width: 100px"
+                min="0"
+                [ngModel]="newBill().tax || 0"
+                (ngModelChange)="updateTax($event)"
+              />
+            </div>
+            <div class="summary-item total">
+              <span>Total:</span>
+              <span>{{ formatCurrency(totalAmount()) }}</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Notes</label>
+            <textarea
+              class="form-control"
+              rows="2"
+              [(ngModel)]="newBill().notes"
+            ></textarea>
+          </div>
+
+          <div class="d-flex justify-content-between mt-3">
+            <button class="btn btn-outline-secondary" (click)="resetBillForm()">
+              Reset
+            </button>
+            <button class="btn btn-primary" (click)="createBill()">
+              Create Bill
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

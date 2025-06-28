@@ -1,8 +1,12 @@
+<!-- register.html -->
 <div class="auth-container">
   <div class="auth-card">
     <div class="auth-header">
-      <h2>Create Account</h2>
+      <h2>{{ isAdminPortal ? 'Admin Registration' : 'Patient Registration' }}</h2>
       <p>Fill in your details to register</p>
+      @if (errorMessage) {
+        <div class="alert alert-danger">{{ errorMessage }}</div>
+      }
     </div>
 
     <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="auth-form">
@@ -18,12 +22,11 @@
             formControlName="name" 
             class="form-control" 
             placeholder="Enter your full name"
+            [class.is-invalid]="registerForm.get('name')?.invalid && registerForm.get('name')?.touched"
           >
         </div>
         @if (registerForm.get('name')?.invalid && registerForm.get('name')?.touched) {
-          <div class="error-message">
-            Please enter your name
-          </div>
+          <div class="error-message">Please enter your name</div>
         }
       </div>
 
@@ -39,12 +42,11 @@
             formControlName="email" 
             class="form-control" 
             placeholder="Enter your email"
+            [class.is-invalid]="registerForm.get('email')?.invalid && registerForm.get('email')?.touched"
           >
         </div>
         @if (registerForm.get('email')?.invalid && registerForm.get('email')?.touched) {
-          <div class="error-message">
-            Please enter a valid email address
-          </div>
+          <div class="error-message">Please enter a valid email address</div>
         }
       </div>
 
@@ -60,12 +62,11 @@
             formControlName="password" 
             class="form-control" 
             placeholder="Enter your password"
+            [class.is-invalid]="registerForm.get('password')?.invalid && registerForm.get('password')?.touched"
           >
         </div>
         @if (registerForm.get('password')?.invalid && registerForm.get('password')?.touched) {
-          <div class="error-message">
-            Password must be at least 6 characters
-          </div>
+          <div class="error-message">Password must be at least 6 characters</div>
         }
       </div>
 
@@ -81,21 +82,30 @@
             formControlName="confirmPassword" 
             class="form-control" 
             placeholder="Confirm your password"
+            [class.is-invalid]="registerForm.hasError('mismatch')"
           >
         </div>
         @if (registerForm.hasError('mismatch')) {
-          <div class="error-message">
-            Passwords do not match
-          </div>
+          <div class="error-message">Passwords do not match</div>
         }
       </div>
 
-      <button type="submit" class="btn btn-success btn-block" [disabled]="!registerForm.valid">
-        Register
+      <button 
+        type="submit" 
+        class="btn btn-success btn-block" 
+        [disabled]="registerForm.invalid || isLoading"
+      >
+        @if (isLoading) {
+          <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+          <span class="visually-hidden">Loading...</span>
+        } @else {
+          Register
+        }
       </button>
 
       <div class="auth-footer">
-        Already have an account? <a routerLink="/login">Login</a>
+        Already have an account? 
+        <a [routerLink]="isAdminPortal ? '/admin-header/login' : '/patient/login'">Login</a>
       </div>
     </form>
   </div>
